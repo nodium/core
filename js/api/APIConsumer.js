@@ -21,10 +21,6 @@
         NodeEvent   = context.use('app.event.NodeEvent'),
         EdgeEvent   = context.use('app.event.EdgeEvent');
 
-    console.log(app);
-    console.log(app.api);
-    console.log('api stuff');
-
     /**
      * Binds kernel events to api calls
      * @constructor
@@ -144,7 +140,5 @@
             this.api.updateNodeLabels(data);
         }
     });
-
-    console.log('api stuff finished');
 
 }(this, jQuery));
