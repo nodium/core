@@ -1,8 +1,8 @@
 {
   "name": "nodium",
   "version": "0.1.0",
-  "description": "This package contains the nodium distribution",
-  "main": "dist/nodium.min.js",
+  "description": "This package contains the Nodium core distribution",
+  "main": "./js/nodium.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

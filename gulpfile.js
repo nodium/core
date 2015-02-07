@@ -32,19 +32,20 @@ gulp.task('build', function () {
             'event/EventAware.js',
         ],
         exclude: [
-            'nodium.js'
+            'nodium.js',
+            'wrapper.js'
         ]
     });
 
     var bundler,
         stream;
 
-    bundler = browserify('./js/nodium.js');
+    bundler = browserify('./js/wrapper.js');
 
     stream = bundler.bundle();
 
     return stream
-        .pipe(source('./nodium.js'))
+        .pipe(source('nodium.js'))
         .pipe(gulp.dest('./dist'));
 });
 
