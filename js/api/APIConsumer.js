@@ -1,5 +1,5 @@
 /**
- * This file is part of the Nodium Neo4j package
+ * This file is part of the Nodium core package
  *
  * (c) Niko van Meurs & Sid Mijnders
  *
@@ -11,20 +11,25 @@
  * @author Niko van Meurs <nikovanmeurs@gmail.com>
  * @author Sid Mijnders
  */
-module.exports = function (Nodium, $, undefined) {
+(function (context, $, undefined) {
 
     'use strict';
 
-    var graph       = Nodium.graph,
-        model       = Nodium.model,
-        NodeEvent   = Nodium.event.NodeEvent,
-        EdgeEvent   = Nodium.event.EdgeEvent;
+    var api         = context.setNamespace('app.api'),
+        app         = context.use('app'),
+        model       = context.use('app.model'),
+        NodeEvent   = context.use('app.event.NodeEvent'),
+        EdgeEvent   = context.use('app.event.EdgeEvent');
+
+    console.log(app);
+    console.log(app.api);
+    console.log('api stuff');
 
     /**
      * Binds kernel events to api calls
      * @constructor
      */
-    graph.Neo4jAPI = Nodium.createClass({
+    api.APIConsumer = app.createClass({
 
         construct: function (api) {
 
@@ -41,7 +46,7 @@ module.exports = function (Nodium, $, undefined) {
         },
 
         /**
-         * Gets the normalized graph content
+         * Gets the normalized api content
          * @param {Function} callback
          */
         get: function (callback) {
@@ -139,4 +144,7 @@ module.exports = function (Nodium, $, undefined) {
             this.api.updateNodeLabels(data);
         }
     });
-};
+
+    console.log('api stuff finished');
+
+}(this, jQuery));

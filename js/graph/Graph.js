@@ -5,6 +5,7 @@
 var graph       = context.setNamespace('app.graph'),
     event       = context.use('app.event'),
     app         = context.use('app'),
+    Drag        = context.use('app.constants.Drag'),
     NodeEvent   = context.use('app.event.NodeEvent'),
     DragEvent   = context.use('app.event.DragEvent'),
     HoldEvent   = context.use('app.event.HoldEvent'),
@@ -582,13 +583,13 @@ graph.Graph = app.createClass({
         this.dragDistance = Math.sqrt(Math.pow(xAbs, 2) + Math.pow(yAbs, 2));
 
         if (this.xChange > 0 && yAbs < xAbs) {
-            this.dragDirection = graph.Drag.RIGHT;
+            this.dragDirection = Drag.RIGHT;
         } else if (this.xChange < 0 && yAbs < xAbs) {
-            this.dragDirection = graph.Drag.LEFT;
+            this.dragDirection = Drag.LEFT;
         } else if (this.yChange > 0 && xAbs < yAbs) {
-            this.dragDirection = graph.Drag.DOWN;
+            this.dragDirection = Drag.DOWN;
         } else if (this.yChange < 0 && xAbs < yAbs) {
-            this.dragDirection = graph.Drag.UP;
+            this.dragDirection = Drag.UP;
         }
     },
 
@@ -705,17 +706,4 @@ graph.Graph = app.createClass({
         }
     }
 });
-
-/*
- * Constants
- */
-
-graph.Drag = {
-    LEFT: 1,
-    RIGHT: 2,
-    UP: 3,
-    DOWN: 4
-};
-
-
 }(this, jQuery, d3, _));

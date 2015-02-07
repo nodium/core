@@ -4,6 +4,7 @@
 
 var modules   = context.setNamespace('app.modules'),
     app       = context.use('app'),
+    Drag      = context.use('app.constants.Drag'),
     HoldEvent = context.use('app.event.HoldEvent'),
 
     _defaults = {
@@ -32,10 +33,10 @@ modules.Holdable = app.createClass({
 
         // TODO graph.holdActions???
         this.graph.holdActions = {};
-        this.graph.holdActions[graph.Drag.LEFT] = "None";
-        this.graph.holdActions[graph.Drag.RIGHT] = "None";
-        this.graph.holdActions[graph.Drag.UP] = "None";
-        this.graph.holdActions[graph.Drag.DOWN] = "None";
+        this.graph.holdActions[Drag.LEFT]   = "None";
+        this.graph.holdActions[Drag.RIGHT]  = "None";
+        this.graph.holdActions[Drag.UP]     = "None";
+        this.graph.holdActions[Drag.DOWN]   = "None";
     },
 
     handleHoldStart: function (event, node, data, position) {
@@ -91,16 +92,16 @@ modules.Holdable = app.createClass({
         // use a fixed distance that has to be dragged
         if (this.graph.holding && this.graph.dragDistance > 100) {
             switch(this.graph.dragDirection) {
-                case graph.Drag.LEFT:
+                case Drag.LEFT:
                     $(this.kernel).trigger(HoldEvent.DRAGLEFT, [node, data]);
                     break;
-                case graph.Drag.RIGHT:
+                case Drag.RIGHT:
                     $(this.kernel).trigger(HoldEvent.DRAGRIGHT, [node, data]);
                     break;
-                case graph.Drag.UP:
+                case Drag.UP:
                     $(this.kernel).trigger(HoldEvent.DRAGUP, [node, data]);
                     break;
-                case graph.Drag.DOWN:
+                case Drag.DOWN:
                     $(this.kernel).trigger(HoldEvent.DRAGDOWN, [node, data]);
                     break;
             }

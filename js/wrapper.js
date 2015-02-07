@@ -11,8 +11,8 @@
  * @author Niko van Meurs <nikovanmeurs@gmail.com>
  * @author Sid Mijnders
  */
- (function (context, undefined) {
+ (function (window, undefined) {
 
-    context.Nodium = require('./nodium');
+    window.Nodium = require('./nodium');
     
-}(this));
+}(window));
