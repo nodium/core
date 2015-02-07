@@ -81,7 +81,7 @@ module.exports = (function (undefined) {
             "module.exports = (function (context) {",
             "    var _      = context._  || require('lodash'),",
             "        d3     = context.d3 || require('d3'),",
-            "        jQuery = context.$  || require('jQuery');",
+            "        jQuery = context.$  || require('jquery');",
             "",
             "    this.app = {",
             "        context: {",

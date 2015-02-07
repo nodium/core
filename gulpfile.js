@@ -39,14 +39,12 @@ gulp.task('build', function () {
     var bundler,
         stream;
 
-    bundler = browserify({
-        entries: ['./js/nodium.js']
-    });
+    bundler = browserify('./js/nodium.js');
 
     stream = bundler.bundle();
 
     return stream
-        .pipe(source('./js/nodium.js'))
+        .pipe(source('./nodium.js'))
         .pipe(gulp.dest('./dist'));
 });
 
