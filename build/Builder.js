@@ -79,9 +79,9 @@ module.exports = (function (undefined) {
     function getHeader () {
         return [
             "module.exports = (function (context) {",
-            "    var _      = context._  || require('lodash'),",
-            "        d3     = context.d3 || require('d3'),",
-            "        jQuery = context.$  || require('jquery');",
+            "    var _      = require('lodash'),",
+            "        d3     = require('d3'),",
+            "        jQuery = require('jquery');",
             "",
             "    this.app = {",
             "        context: {",
