@@ -33,6 +33,7 @@
         },
 
         initialize: function () {
+
             $(this.kernel).on(NodeEvent.CREATED, this.handleNodeCreated.bind(this));
             $(this.kernel).on(NodeEvent.DESTROYED, this.handleNodeDeleted.bind(this));
             $(this.kernel).on(EdgeEvent.CREATED, this.handleEdgeCreated.bind(this));
@@ -114,9 +115,6 @@
                 return;
             }
 
-            console.log("api: handling node update");
-            console.log(data._id);
-
             this.api.updateNode(data);
         },
 
@@ -133,9 +131,6 @@
             if (!update.changed(model.Node.getLabelsPath())) {
                 return;
             }
-
-            console.log("api: handling node label update");
-            console.log(data._id);
 
             this.api.updateNodeLabels(data);
         }

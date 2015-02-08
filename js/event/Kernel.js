@@ -19,7 +19,7 @@ event.Kernel = app.createClass(EventAware, {
             this.attachModuleEvents(module, events);
         }
 
-        if (typeof(module.initialize) === "function") {
+        if (typeof module.initialize === "function") {
             module.initialize();
         }
 

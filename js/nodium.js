@@ -642,6 +642,70 @@ var app                 = context.setNamespace('app');
     };
 }(this));
 
+(function (context, undefined) {
+	var event = context.setNamespace('app.event'),
+		DragEvent;
+
+	DragEvent = {
+		START: 'drag-start',
+		DRAG: 'drag',
+		END: 'drag-end'
+	};
+
+	event.DragEvent = DragEvent;
+}(this));
+
+(function (context, undefined) {
+	var event = context.setNamespace('app.event'),
+		EdgeEvent;
+
+	EdgeEvent = {
+		CREATE: 'edge-create',
+		REPLACE: 'edge-replace',
+		UPDATE: 'edge-update',
+		DESTROY: 'edge-delete',
+		SELECT: 'edge-select',
+		UNSELECT: 'edge-unselect',
+		CREATED: 'edge-created',
+		REPLACED: 'edge-replaced',
+		UPDATED: 'edge-updated',
+		DESTROYED: 'edge-destroyed',
+		SELECTED: 'edge-selected',
+		UNSELECTED: 'edge-unselected',
+		DRAWN: 'edge-drawn',
+		MODECHANGE: 'edge-mode-change',
+		MODECHANGED: 'edge-mode-change'
+	};
+
+	event.EdgeEvent = EdgeEvent;
+}(this));
+
+(function (context, undefined) {
+
+    // 'use strict';
+
+    var event = context.setNamespace('app.event');
+
+    const Event = {
+        CHANGE:     'change',
+        CLICK:      'click',
+        FOCUS_OUT:  'focusout',
+        INPUT:      'input',
+        KEY_DOWN:   'keydown',
+        KEY_UP:     'keyup',
+        MOUSE_DOWN: 'mousedown',
+        MOUSE_DRAG: 'mousedrag',
+        MOUSE_MOVE: 'mousemove',
+        MOUSE_UP:   'mouseup',
+        PASTE:      'paste',
+        POP_STATE:  'popstate',
+        SCROLL:     'scroll',
+        SUBMIT:     'submit'
+    };
+
+    event.Event = Event;
+
+}(this));
 (function (context, $, undefined){
 
 var event   = context.setNamespace('app.event'),
@@ -739,261 +803,6 @@ event.EventAware = app.createClass({
 
 }(this, jQuery));
 
-/**
- * This file is part of the Nodium core package
- *
- * (c) Niko van Meurs & Sid Mijnders
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
-/**
- * @author Niko van Meurs <nikovanmeurs@gmail.com>
- * @author Sid Mijnders
- */
-(function (context, $, undefined) {
-
-    'use strict';
-
-    var api         = context.setNamespace('app.api'),
-        app         = context.use('app'),
-        model       = context.use('app.model'),
-        NodeEvent   = context.use('app.event.NodeEvent'),
-        EdgeEvent   = context.use('app.event.EdgeEvent');
-
-    /**
-     * Binds kernel events to api calls
-     * @constructor
-     */
-    api.APIConsumer = app.createClass({
-
-        construct: function (api) {
-
-            this.api = api;
-        },
-
-        initialize: function () {
-            $(this.kernel).on(NodeEvent.CREATED, this.handleNodeCreated.bind(this));
-            $(this.kernel).on(NodeEvent.DESTROYED, this.handleNodeDeleted.bind(this));
-            $(this.kernel).on(EdgeEvent.CREATED, this.handleEdgeCreated.bind(this));
-            $(this.kernel).on(EdgeEvent.DESTROYED, this.handleEdgeDeleted.bind(this));
-            $(this.kernel).on(NodeEvent.UPDATED, this.handleNodeUpdated.bind(this));
-            $(this.kernel).on(NodeEvent.UPDATED, this.handleNodeLabelUpdated.bind(this));
-        },
-
-        /**
-         * Gets the normalized api content
-         * @param {Function} callback
-         */
-        get: function (callback) {
-
-            this.api.getGraph().then(callback);
-        },
-
-        /**
-         * Triggered by NodeEvent.CREATED
-         * @param {Object} event
-         * @param {Node} node
-         * @param {Object} data
-         */
-        handleNodeCreated: function (event, node, data) {
-
-            this.api.createNode(data);
-        },
-
-        /**
-         * Triggered by NodeEvent.DELETED
-         * @param {Object} event
-         * @param {Object} data
-         */
-        handleNodeDeleted: function (event, data) {
-
-            this.api.deleteNode(data);
-        },
-
-        /**
-         * Triggered by EdgeEvent.CREATED
-         * @param {Object} event
-         * @param {Object} data
-         * @param {Object} source
-         * @param {target} target
-         */
-        handleEdgeCreated: function (event, data, source, target) {
-
-            this.api.createEdge({
-                from: source,
-                to:   target
-            }).then(function (id) {
-                data._id = id;
-            });
-        },
-
-        /**
-         * Triggered by EdgeEvent.DELETED
-         * @param {Object} event
-         * @param {Object} data
-         */
-        handleEdgeDeleted: function (event, data) {
-
-            this.api.deleteEdge({ id: data.id });
-        },
-
-        /**
-         * Triggered by NodeEvent.UPDATED
-         * @param {Object} event
-         * @param {Node} node
-         * @param {Object} data
-         * @param {Update} update
-         */
-        handleNodeUpdated: function (event, node, data, update) {
-
-            // check if a property was updated
-            if (!update.changed(model.Node.getPropertiesPath()) &&
-                !update.changed('_style')) {
-                
-                return;
-            }
-
-            console.log("api: handling node update");
-            console.log(data._id);
-
-            this.api.updateNode(data);
-        },
-
-        /**
-         * Triggered by NodeEvent.UPDATEDLABEL
-         * @param {Object} event
-         * @param {Node} node
-         * @param {Object} data
-         * @param {Update} update
-         */
-        handleNodeLabelUpdated: function (event, node, data, update) {
-
-            // check if a label was added or removed
-            if (!update.changed(model.Node.getLabelsPath())) {
-                return;
-            }
-
-            console.log("api: handling node label update");
-            console.log(data._id);
-
-            this.api.updateNodeLabels(data);
-        }
-    });
-
-}(this, jQuery));
-
-(function (context, undefined) {
-
-    // 'use strict';
-
-    var constants   = context.setNamespace('app.constants');
-
-    const Drag = {
-        LEFT: 1,
-        RIGHT: 2,
-        UP: 3,
-        DOWN: 4
-    };
-
-    constants.Drag = Drag;
-
-}(this));
-
-(function (context, undefined) {
-
-'use strict';
-
-var constants   = context.setNamespace('app.constants');
-
-constants.EvaluationStrategy = {
-	LABEL: 'label',
-	PROPERTY: 'property'
-};
-
-}(this));
-
-(function (context, undefined) {
-
-// 'use strict';
-
-var constants   = context.setNamespace('app.constants');
-
-const NodeStatus = {
-	ACCEPTED: 'accepted',
-	DENIED: 'denied',
-	PENDING: 'pending'
-};
-
-constants.NodeStatus = NodeStatus;
-
-}(this));
-
-(function (context, undefined) {
-	var event = context.setNamespace('app.event'),
-		DragEvent;
-
-	DragEvent = {
-		START: 'drag-start',
-		DRAG: 'drag',
-		END: 'drag-end'
-	};
-
-	event.DragEvent = DragEvent;
-}(this));
-
-(function (context, undefined) {
-	var event = context.setNamespace('app.event'),
-		EdgeEvent;
-
-	EdgeEvent = {
-		CREATE: 'edge-create',
-		REPLACE: 'edge-replace',
-		UPDATE: 'edge-update',
-		DESTROY: 'edge-delete',
-		SELECT: 'edge-select',
-		UNSELECT: 'edge-unselect',
-		CREATED: 'edge-created',
-		REPLACED: 'edge-replaced',
-		UPDATED: 'edge-updated',
-		DESTROYED: 'edge-destroyed',
-		SELECTED: 'edge-selected',
-		UNSELECTED: 'edge-unselected',
-		DRAWN: 'edge-drawn',
-		MODECHANGE: 'edge-mode-change',
-		MODECHANGED: 'edge-mode-change'
-	};
-
-	event.EdgeEvent = EdgeEvent;
-}(this));
-
-(function (context, undefined) {
-
-    // 'use strict';
-
-    var event = context.setNamespace('app.event');
-
-    const Event = {
-        CHANGE:     'change',
-        CLICK:      'click',
-        FOCUS_OUT:  'focusout',
-        INPUT:      'input',
-        KEY_DOWN:   'keydown',
-        KEY_UP:     'keyup',
-        MOUSE_DOWN: 'mousedown',
-        MOUSE_DRAG: 'mousedrag',
-        MOUSE_MOVE: 'mousemove',
-        MOUSE_UP:   'mouseup',
-        PASTE:      'paste',
-        POP_STATE:  'popstate',
-        SCROLL:     'scroll',
-        SUBMIT:     'submit'
-    };
-
-    event.Event = Event;
-
-}(this));
 (function (context, undefined) {
 	var event = context.setNamespace('app.event'),
 		HoldEvent;
@@ -1031,7 +840,7 @@ event.Kernel = app.createClass(EventAware, {
             this.attachModuleEvents(module, events);
         }
 
-        if (typeof(module.initialize) === "function") {
+        if (typeof module.initialize === "function") {
             module.initialize();
         }
 
@@ -1114,6 +923,495 @@ event.Kernel = app.createClass(EventAware, {
 	};
 
 	event.NodeEvent = NodeEvent;
+}(this));
+
+(function (context, _, undefined) {
+    var model = context.setNamespace('app.model');
+
+    const
+        idPath          = '_id',
+        labelsPath      = '_labels',
+        propertiesPath  = '_properties',
+        shapePath       = '_shape';
+
+    model.Node = {
+
+        create: function (properties, labels, id) {
+
+            var node = {};
+
+            // TODO use setters from util for this
+            node[propertiesPath] = properties || {};
+            node[labelsPath] = labels || [];
+            node[idPath] = id === undefined ? _.uniqueId() : id; // force id usage
+
+            // console.log('CREATING NODE');
+            // console.log(node);
+
+            return node;
+        },
+
+        getId: function (data) {
+
+            return context.getObjectValueByPath(data, idPath);
+        },
+
+        getIdPath: function () {
+
+            return idPath;
+        },
+
+        getLabelsPath: function (index) {
+
+            var path = labelsPath;
+
+            if (index) {
+                path += '.' + index;
+            }
+
+            return path;
+        },
+
+        getPropertiesPath: function (property) {
+
+            var path = propertiesPath;
+
+            if (property) {
+                path += '.' + property;
+            }
+
+            return path;
+        },
+
+        /**
+         * Return the labels array
+         */
+        getLabels: function (data) {
+
+            return context.getObjectValueByPath(data, labelsPath);
+        },
+
+        /**
+         * Return the properties object
+         */
+        getProperties: function (data) {
+
+            return context.getObjectValueByPath(data, propertiesPath);
+        },
+
+        getPropertyValue: function (data, property) {
+
+            var path = this.getPropertiesPath(property);
+
+            return context.getObjectValueByPath(data, path);
+        },
+
+        /**
+         * Filters this node's edges from the given array
+         */
+        filterEdges: function (data, edges) {
+
+            var id = this.getId(data);
+
+            return edges.filter(function (edge) {
+                var sourceId = this.getId(edge.source);
+                var targetId = this.getId(edge.target);
+                return sourceId === id || targetId === id;
+            }, this);
+        },
+
+        hasProperty: function (data, property) {
+
+            var path = this.getPropertiesPath(property);
+
+            return context.getObjectValueByPath(data, path) !== undefined;
+        },
+
+        hasPropertyWithValue: function (data, property, value) {
+
+            var path = this.getPropertiesPath(property),
+                propertyValue = context.getObjectValueByPath(data, path);
+
+            return value === propertyValue;
+        },
+
+        hasLabel: function (data, label) {
+
+            var labels = model.Node.getLabels(data);
+
+            return labels.indexOf(label) !== -1;
+        }
+    };
+
+}(this, _));
+(function (context, _, undefined) {
+
+'use strict';
+
+var model = context.setNamespace('app.model'),
+	Node  = context.use('app.model.Node');
+
+model.Update = app.createClass({
+
+	construct: function () {
+
+		this._set = [];
+		this._unset = [];
+
+		// a map of the changes
+		this.difference;
+
+		// object with string representations of all (sub)paths
+		// that are in the difference array
+		this.paths;
+
+		// the number of changes
+		this.count;
+	},
+
+	/*
+	 * Setting and unsetting
+	 */
+
+    set: function (path, value) {
+
+    	this._set.push([path, value]);
+    },
+
+    unset: function (path, value) {
+
+    	this._unset.push([path, value]);
+    },
+
+    /**
+     * Replace all properties
+     */
+    setProperties: function (properties, value) {
+
+    	this.set(Node.getPropertiesPath(), properties);
+    },
+
+    /**
+     * Set a property value
+     */
+    setProperty: function (property, value) {
+
+    	this.set(Node.getPropertiesPath(property), value);
+    },
+
+    unsetProperty: function (property) {
+
+    	this.unset(Node.getPropertiesPath(property));
+    },
+
+    /**
+     * Replace all labels
+     */
+    setLabels: function (labels) {
+
+    	this.set(Node.getLabelsPath(), labels);
+    },
+
+    setLabel: function (label) {
+
+    	// Pass index -1 to push
+    	this.set(Node.getLabelsPath(-1), label);
+
+    	console.log(this);
+    },
+
+    unsetLabel: function (label) {
+
+    	this.unset(Node.getLabelsPath(), label);
+    },
+
+
+    /*
+     * Processing and difference
+     */
+
+
+    /**
+     * Updates the data with the update directives
+     * The reason we use directives is that it allows for more
+     * control in some cases. E.g. when you want to set a whole
+     * sub-object at once.
+     */
+    process: function (data) {
+
+        var set = this._set,
+            unset = this._unset,
+            i,
+            directive,
+            clone = _.cloneDeep(data),
+            deepdiff;
+
+        // we process unset first, so that at least
+        // every property in set will be set
+
+        if (unset) {
+
+            for (i = 0; i < unset.length; i++) {
+                directive = unset[i];
+                context.removeByPath(data, directive[0], directive[1]);
+            }
+        }
+
+        if (set) {
+
+            for (i = 0; i < set.length; i++) {
+                directive = set[i];
+                context.setByPath(data, directive[0], directive[1]);
+            }
+        }
+
+        deepdiff = DeepDiff.diff(clone, data);
+        this.prepareDifference(deepdiff);
+    },
+
+    /**
+     * Creates a difference object with the changes keyed by path
+     */
+    prepareDifference: function (deepdiff) {
+
+    	var paths = {},
+    		subpath,
+    		diff,
+    		count = 0,
+    		i, j;
+
+    	deepdiff = deepdiff || [];
+    	this.difference = deepdiff;
+
+    	if (!deepdiff) {
+    		this.paths = paths;
+    		this.count = 0;
+    		return;
+    	}
+
+    	for (i = 0; i < deepdiff.length; i++) {
+
+    		diff = deepdiff[i];
+
+    		if (!diff.path) {
+    			continue;
+    		}
+
+    		subpath = '';
+
+    		for (j = 0; j < diff.path.length; j++) {
+
+    			if (subpath !== '') {
+    				subpath += '.';
+    			}
+
+    			subpath += diff.path[j];
+
+    			paths[subpath] = 1;
+    		}
+
+    		count++;
+    	}
+
+    	this.paths = paths;
+    	this.count = count;
+    },
+
+    /**
+     * Checks the difference object for a path
+     */
+    changed: function (path) {
+
+    	return this.paths.hasOwnProperty(path);
+    }
+
+});
+
+}(this, _));
+/**
+ * This file is part of the Nodium core package
+ *
+ * (c) Niko van Meurs & Sid Mijnders
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/**
+ * @author Niko van Meurs <nikovanmeurs@gmail.com>
+ * @author Sid Mijnders
+ */
+(function (context, $, undefined) {
+
+    'use strict';
+
+    var api         = context.setNamespace('app.api'),
+        app         = context.use('app'),
+        model       = context.use('app.model'),
+        NodeEvent   = context.use('app.event.NodeEvent'),
+        EdgeEvent   = context.use('app.event.EdgeEvent');
+
+    /**
+     * Binds kernel events to api calls
+     * @constructor
+     */
+    api.APIConsumer = app.createClass({
+
+        construct: function (api) {
+
+            this.api = api;
+        },
+
+        initialize: function () {
+
+            $(this.kernel).on(NodeEvent.CREATED, this.handleNodeCreated.bind(this));
+            $(this.kernel).on(NodeEvent.DESTROYED, this.handleNodeDeleted.bind(this));
+            $(this.kernel).on(EdgeEvent.CREATED, this.handleEdgeCreated.bind(this));
+            $(this.kernel).on(EdgeEvent.DESTROYED, this.handleEdgeDeleted.bind(this));
+            $(this.kernel).on(NodeEvent.UPDATED, this.handleNodeUpdated.bind(this));
+            $(this.kernel).on(NodeEvent.UPDATED, this.handleNodeLabelUpdated.bind(this));
+        },
+
+        /**
+         * Gets the normalized api content
+         * @param {Function} callback
+         */
+        get: function (callback) {
+
+            this.api.getGraph().then(callback);
+        },
+
+        /**
+         * Triggered by NodeEvent.CREATED
+         * @param {Object} event
+         * @param {Node} node
+         * @param {Object} data
+         */
+        handleNodeCreated: function (event, node, data) {
+
+            this.api.createNode(data);
+        },
+
+        /**
+         * Triggered by NodeEvent.DELETED
+         * @param {Object} event
+         * @param {Object} data
+         */
+        handleNodeDeleted: function (event, data) {
+
+            this.api.deleteNode(data);
+        },
+
+        /**
+         * Triggered by EdgeEvent.CREATED
+         * @param {Object} event
+         * @param {Object} data
+         * @param {Object} source
+         * @param {target} target
+         */
+        handleEdgeCreated: function (event, data, source, target) {
+
+            this.api.createEdge({
+                from: source,
+                to:   target
+            }).then(function (id) {
+                data._id = id;
+            });
+        },
+
+        /**
+         * Triggered by EdgeEvent.DELETED
+         * @param {Object} event
+         * @param {Object} data
+         */
+        handleEdgeDeleted: function (event, data) {
+
+            this.api.deleteEdge({ id: data.id });
+        },
+
+        /**
+         * Triggered by NodeEvent.UPDATED
+         * @param {Object} event
+         * @param {Node} node
+         * @param {Object} data
+         * @param {Update} update
+         */
+        handleNodeUpdated: function (event, node, data, update) {
+
+            // check if a property was updated
+            if (!update.changed(model.Node.getPropertiesPath()) &&
+                !update.changed('_style')) {
+                
+                return;
+            }
+
+            this.api.updateNode(data);
+        },
+
+        /**
+         * Triggered by NodeEvent.UPDATEDLABEL
+         * @param {Object} event
+         * @param {Node} node
+         * @param {Object} data
+         * @param {Update} update
+         */
+        handleNodeLabelUpdated: function (event, node, data, update) {
+
+            // check if a label was added or removed
+            if (!update.changed(model.Node.getLabelsPath())) {
+                return;
+            }
+
+            this.api.updateNodeLabels(data);
+        }
+    });
+
+}(this, jQuery));
+
+(function (context, undefined) {
+
+    // 'use strict';
+
+    var constants   = context.setNamespace('app.constants');
+
+    const Drag = {
+        LEFT: 1,
+        RIGHT: 2,
+        UP: 3,
+        DOWN: 4
+    };
+
+    constants.Drag = Drag;
+
+}(this));
+
+(function (context, undefined) {
+
+'use strict';
+
+var constants   = context.setNamespace('app.constants');
+
+constants.EvaluationStrategy = {
+	LABEL: 'label',
+	PROPERTY: 'property'
+};
+
+}(this));
+
+(function (context, undefined) {
+
+// 'use strict';
+
+var constants   = context.setNamespace('app.constants');
+
+const NodeStatus = {
+	ACCEPTED: 'accepted',
+	DENIED: 'denied',
+	PENDING: 'pending'
+};
+
+constants.NodeStatus = NodeStatus;
+
 }(this));
 
 (function (context, $, d3, _, undefined) {
@@ -1922,309 +2220,6 @@ graphics.shapeNodes = function (nodes, shape) {
 };
 
 })(this, jQuery, d3);
-(function (context, _, undefined) {
-	var model = context.setNamespace('app.model');
-
-	const
-		idPath 		 	= '_id',
-		labelsPath	 	= '_labels',
-		propertiesPath 	= '_properties',
-		shapePath      	= '_shape';
-
-	model.Node = {
-
-		create: function (properties, labels, id) {
-
-			var node = {};
-
-			// TODO use setters from util for this
-			node[propertiesPath] = properties || {};
-			node[labelsPath] = labels || [];
-			node[idPath] = id === undefined ? _.uniqueId() : id; // force id usage
-
-			// console.log('CREATING NODE');
-			// console.log(node);
-
-			return node;
-	    },
-
-	    getId: function (data) {
-
-	    	return context.getObjectValueByPath(data, idPath);
-	    },
-
-	    getIdPath: function () {
-
-	    	return idPath;
-	    },
-
-	    getLabelsPath: function (index) {
-
-	    	var path = labelsPath;
-
-	    	if (index) {
-	    		path += '.' + index;
-	    	}
-
-	    	return path;
-	    },
-
-	    getPropertiesPath: function (property) {
-
-	    	var path = propertiesPath;
-
-	    	if (property) {
-	    		path += '.' + property;
-	    	}
-
-	    	return path;
-	    },
-
-	    /**
-	     * Return the labels array
-	     */
-	    getLabels: function (data) {
-
-	    	return context.getObjectValueByPath(data, labelsPath);
-	    },
-
-	    /**
-	     * Return the properties object
-	     */
-	    getProperties: function (data) {
-
-	    	return context.getObjectValueByPath(data, propertiesPath);
-	    },
-
-		getPropertyValue: function (data, property) {
-
-	    	var path = this.getPropertiesPath(property);
-
-	    	return context.getObjectValueByPath(data, path);
-	    },
-
-	    /**
-	     * Filters this node's edges from the given array
-	     */
-	    filterEdges: function (data, edges) {
-
-	    	var id = this.getId(data);
-
-	    	return edges.filter(function (edge) {
-	    		var sourceId = this.getId(edge.source);
-	    		var targetId = this.getId(edge.target);
-	    		return sourceId === id || targetId === id;
-	    	}, this);
-	    },
-
-	    hasProperty: function (data, property) {
-
-	    	var path = this.getPropertiesPath(property);
-
-	    	return context.getObjectValueByPath(data, path) !== undefined;
-	    },
-
-	    hasPropertyWithValue: function (data, property, value) {
-
-	    	var path = this.getPropertiesPath(property),
-	    		propertyValue = context.getObjectValueByPath(data, path);
-
-	    	return value === propertyValue;
-	    },
-
-	    hasLabel: function (data, label) {
-
-	    	var labels = model.Node.getLabels(data);
-
-	    	return labels.indexOf(label) !== -1;
-	    }
-	};
-
-}(this, _));
-(function (context, _, undefined) {
-
-'use strict';
-
-var model = context.setNamespace('app.model'),
-	Node  = context.use('app.model.Node');
-
-model.Update = app.createClass({
-
-	construct: function () {
-
-		this._set = [];
-		this._unset = [];
-
-		// a map of the changes
-		this.difference;
-
-		// object with string representations of all (sub)paths
-		// that are in the difference array
-		this.paths;
-
-		// the number of changes
-		this.count;
-	},
-
-	/*
-	 * Setting and unsetting
-	 */
-
-    set: function (path, value) {
-
-    	this._set.push([path, value]);
-    },
-
-    unset: function (path, value) {
-
-    	this._unset.push([path, value]);
-    },
-
-    /**
-     * Replace all properties
-     */
-    setProperties: function (properties, value) {
-
-    	this.set(Node.getPropertiesPath(), properties);
-    },
-
-    /**
-     * Set a property value
-     */
-    setProperty: function (property, value) {
-
-    	this.set(Node.getPropertiesPath(property), value);
-    },
-
-    unsetProperty: function (property) {
-
-    	this.unset(Node.getPropertiesPath(property));
-    },
-
-    /**
-     * Replace all labels
-     */
-    setLabels: function (labels) {
-
-    	this.set(Node.getLabelsPath(), labels);
-    },
-
-    setLabel: function (label) {
-
-    	// Pass index -1 to push
-    	this.set(Node.getLabelsPath(-1), label);
-
-    	console.log(this);
-    },
-
-    unsetLabel: function (label) {
-
-    	this.unset(Node.getLabelsPath(), label);
-    },
-
-
-    /*
-     * Processing and difference
-     */
-
-
-    /**
-     * Updates the data with the update directives
-     * The reason we use directives is that it allows for more
-     * control in some cases. E.g. when you want to set a whole
-     * sub-object at once.
-     */
-    process: function (data) {
-
-        var set = this._set,
-            unset = this._unset,
-            i,
-            directive,
-            clone = _.cloneDeep(data),
-            deepdiff;
-
-        // we process unset first, so that at least
-        // every property in set will be set
-
-        if (unset) {
-
-            for (i = 0; i < unset.length; i++) {
-                directive = unset[i];
-                context.removeByPath(data, directive[0], directive[1]);
-            }
-        }
-
-        if (set) {
-
-            for (i = 0; i < set.length; i++) {
-                directive = set[i];
-                context.setByPath(data, directive[0], directive[1]);
-            }
-        }
-
-        deepdiff = DeepDiff.diff(clone, data);
-        this.prepareDifference(deepdiff);
-    },
-
-    /**
-     * Creates a difference object with the changes keyed by path
-     */
-    prepareDifference: function (deepdiff) {
-
-    	var paths = {},
-    		subpath,
-    		diff,
-    		count = 0,
-    		i, j;
-
-    	deepdiff = deepdiff || [];
-    	this.difference = deepdiff;
-
-    	if (!deepdiff) {
-    		this.paths = paths;
-    		this.count = 0;
-    		return;
-    	}
-
-    	for (i = 0; i < deepdiff.length; i++) {
-
-    		diff = deepdiff[i];
-
-    		if (!diff.path) {
-    			continue;
-    		}
-
-    		subpath = '';
-
-    		for (j = 0; j < diff.path.length; j++) {
-
-    			if (subpath !== '') {
-    				subpath += '.';
-    			}
-
-    			subpath += diff.path[j];
-
-    			paths[subpath] = 1;
-    		}
-
-    		count++;
-    	}
-
-    	this.paths = paths;
-    	this.count = count;
-    },
-
-    /**
-     * Checks the difference object for a path
-     */
-    changed: function (path) {
-
-    	return this.paths.hasOwnProperty(path);
-    }
-
-});
-
-}(this, _));
 (function (context, $, d3, undefined) {
 
 'use strict';

@@ -1,119 +1,119 @@
 (function (context, _, undefined) {
-	var model = context.setNamespace('app.model');
+    var model = context.setNamespace('app.model');
 
-	const
-		idPath 		 	= '_id',
-		labelsPath	 	= '_labels',
-		propertiesPath 	= '_properties',
-		shapePath      	= '_shape';
+    const
+        idPath          = '_id',
+        labelsPath      = '_labels',
+        propertiesPath  = '_properties',
+        shapePath       = '_shape';
 
-	model.Node = {
+    model.Node = {
 
-		create: function (properties, labels, id) {
+        create: function (properties, labels, id) {
 
-			var node = {};
+            var node = {};
 
-			// TODO use setters from util for this
-			node[propertiesPath] = properties || {};
-			node[labelsPath] = labels || [];
-			node[idPath] = id === undefined ? _.uniqueId() : id; // force id usage
+            // TODO use setters from util for this
+            node[propertiesPath] = properties || {};
+            node[labelsPath] = labels || [];
+            node[idPath] = id === undefined ? _.uniqueId() : id; // force id usage
 
-			// console.log('CREATING NODE');
-			// console.log(node);
+            // console.log('CREATING NODE');
+            // console.log(node);
 
-			return node;
-	    },
+            return node;
+        },
 
-	    getId: function (data) {
+        getId: function (data) {
 
-	    	return context.getObjectValueByPath(data, idPath);
-	    },
+            return context.getObjectValueByPath(data, idPath);
+        },
 
-	    getIdPath: function () {
+        getIdPath: function () {
 
-	    	return idPath;
-	    },
+            return idPath;
+        },
 
-	    getLabelsPath: function (index) {
+        getLabelsPath: function (index) {
 
-	    	var path = labelsPath;
+            var path = labelsPath;
 
-	    	if (index) {
-	    		path += '.' + index;
-	    	}
+            if (index) {
+                path += '.' + index;
+            }
 
-	    	return path;
-	    },
+            return path;
+        },
 
-	    getPropertiesPath: function (property) {
+        getPropertiesPath: function (property) {
 
-	    	var path = propertiesPath;
+            var path = propertiesPath;
 
-	    	if (property) {
-	    		path += '.' + property;
-	    	}
+            if (property) {
+                path += '.' + property;
+            }
 
-	    	return path;
-	    },
+            return path;
+        },
 
-	    /**
-	     * Return the labels array
-	     */
-	    getLabels: function (data) {
+        /**
+         * Return the labels array
+         */
+        getLabels: function (data) {
 
-	    	return context.getObjectValueByPath(data, labelsPath);
-	    },
+            return context.getObjectValueByPath(data, labelsPath);
+        },
 
-	    /**
-	     * Return the properties object
-	     */
-	    getProperties: function (data) {
+        /**
+         * Return the properties object
+         */
+        getProperties: function (data) {
 
-	    	return context.getObjectValueByPath(data, propertiesPath);
-	    },
+            return context.getObjectValueByPath(data, propertiesPath);
+        },
 
-		getPropertyValue: function (data, property) {
+        getPropertyValue: function (data, property) {
 
-	    	var path = this.getPropertiesPath(property);
+            var path = this.getPropertiesPath(property);
 
-	    	return context.getObjectValueByPath(data, path);
-	    },
+            return context.getObjectValueByPath(data, path);
+        },
 
-	    /**
-	     * Filters this node's edges from the given array
-	     */
-	    filterEdges: function (data, edges) {
+        /**
+         * Filters this node's edges from the given array
+         */
+        filterEdges: function (data, edges) {
 
-	    	var id = this.getId(data);
+            var id = this.getId(data);
 
-	    	return edges.filter(function (edge) {
-	    		var sourceId = this.getId(edge.source);
-	    		var targetId = this.getId(edge.target);
-	    		return sourceId === id || targetId === id;
-	    	}, this);
-	    },
+            return edges.filter(function (edge) {
+                var sourceId = this.getId(edge.source);
+                var targetId = this.getId(edge.target);
+                return sourceId === id || targetId === id;
+            }, this);
+        },
 
-	    hasProperty: function (data, property) {
+        hasProperty: function (data, property) {
 
-	    	var path = this.getPropertiesPath(property);
+            var path = this.getPropertiesPath(property);
 
-	    	return context.getObjectValueByPath(data, path) !== undefined;
-	    },
+            return context.getObjectValueByPath(data, path) !== undefined;
+        },
 
-	    hasPropertyWithValue: function (data, property, value) {
+        hasPropertyWithValue: function (data, property, value) {
 
-	    	var path = this.getPropertiesPath(property),
-	    		propertyValue = context.getObjectValueByPath(data, path);
+            var path = this.getPropertiesPath(property),
+                propertyValue = context.getObjectValueByPath(data, path);
 
-	    	return value === propertyValue;
-	    },
+            return value === propertyValue;
+        },
 
-	    hasLabel: function (data, label) {
+        hasLabel: function (data, label) {
 
-	    	var labels = model.Node.getLabels(data);
+            var labels = model.Node.getLabels(data);
 
-	    	return labels.indexOf(label) !== -1;
-	    }
-	};
+            return labels.indexOf(label) !== -1;
+        }
+    };
 
 }(this, _));

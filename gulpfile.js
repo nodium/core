@@ -29,7 +29,8 @@ gulp.task('build', function () {
             'util/wrappers.js',
             'util/super.js',
             'util',
-            'event/EventAware.js',
+            'event',
+            'model'
         ],
         exclude: [
             'nodium.js',
