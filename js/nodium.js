@@ -105,12 +105,14 @@ module.exports = (function (context) {
 
 var app                 = context.setNamespace('app');
 
-    app.clearTimeout    = context.clearTimeout.bind(context),
-    app.setTimeout      = context.setTimeout.bind(context),
-    app.open            = context.open.bind(context);
+	// check if window
+	if (context.window) {
+	    app.clearTimeout    = window.clearTimeout.bind(context),
+	    app.setTimeout      = window.setTimeout.bind(context),
+	    app.open            = window.open.bind(context);
+	}
 
 }(this));
-
 /**
  * This file is part of the Nodium core package
  *
@@ -4059,23 +4061,5 @@ transformer.D3Transformer = app.createClass(transformer.AbstractDataTransformer,
 });
 
 }(this));
-/**
- * This file is part of the Nodium core package
- *
- * (c) Niko van Meurs & Sid Mijnders
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
-/**
- * @author Niko van Meurs <nikovanmeurs@gmail.com>
- * @author Sid Mijnders
- */
- (function (window, undefined) {
-
-    window.Nodium = require('./nodium');
-    
-}(window));
     return this.app;
 }(this));

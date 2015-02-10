@@ -33,8 +33,8 @@ gulp.task('build', function () {
             'model'
         ],
         exclude: [
-            'nodium.js',
-            'wrapper.js'
+            './js/nodium.js',
+            './js/wrapper.js'
         ]
     });
 

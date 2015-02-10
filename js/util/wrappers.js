@@ -14,8 +14,11 @@
 
 var app                 = context.setNamespace('app');
 
-    app.clearTimeout    = context.clearTimeout.bind(context),
-    app.setTimeout      = context.setTimeout.bind(context),
-    app.open            = context.open.bind(context);
+	// check if window
+	if (context.window) {
+	    app.clearTimeout    = window.clearTimeout.bind(context),
+	    app.setTimeout      = window.setTimeout.bind(context),
+	    app.open            = window.open.bind(context);
+	}
 
 }(this));

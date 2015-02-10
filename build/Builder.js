@@ -121,7 +121,10 @@ module.exports = (function (undefined) {
     function traverse (path) {
         var classPath;
 
+        // console.log(path);
+
         if (traversed.indexOf(path) !== -1) {
+            // console.log('skipping');
             return;
         }
 
