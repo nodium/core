@@ -34,6 +34,7 @@
 
         initialize: function () {
 
+            // This should be done dynamically depending on which functionality the given api exposes
             $(this.kernel).on(NodeEvent.CREATED, this.handleNodeCreated.bind(this));
             $(this.kernel).on(NodeEvent.DESTROYED, this.handleNodeDeleted.bind(this));
             $(this.kernel).on(EdgeEvent.CREATED, this.handleEdgeCreated.bind(this));
@@ -42,13 +43,29 @@
             $(this.kernel).on(NodeEvent.UPDATED, this.handleNodeLabelUpdated.bind(this));
         },
 
+        executeIfExists: function (functionName) {
+
+            var args,
+                fn;
+
+            fn = this.api[functionName];
+
+            if ('function' !== typeof fn) {
+                return;
+            }
+
+            args = arguments.slice(1);
+
+            return fn.apply(this.api, args);
+        }
+
         /**
          * Gets the normalized api content
          * @param {Function} callback
          */
         get: function (callback) {
 
-            this.api.getGraph().then(callback);
+            this.executeIfExists('getGraph').then(callback);
         },
 
         /**
@@ -59,7 +76,7 @@
          */
         handleNodeCreated: function (event, node, data) {
 
-            this.api.createNode(data);
+            this.executeIfExists('createNode', data);
         },
 
         /**
@@ -69,7 +86,7 @@
          */
         handleNodeDeleted: function (event, data) {
 
-            this.api.deleteNode(data);
+            this.executeIfExists('deleteNode', data);
         },
 
         /**
@@ -81,7 +98,7 @@
          */
         handleEdgeCreated: function (event, data, source, target) {
 
-            this.api.createEdge({
+            this.executeIfExists('createEdge', {
                 from: source,
                 to:   target
             }).then(function (id) {
@@ -96,7 +113,7 @@
          */
         handleEdgeDeleted: function (event, data) {
 
-            this.api.deleteEdge({ id: data.id });
+            this.executeIfExists('deleteEdge', { id: data.id });
         },
 
         /**
@@ -115,7 +132,7 @@
                 return;
             }
 
-            this.api.updateNode(data);
+            this.executeIfExists('updateNode', data);
         },
 
         /**
@@ -132,7 +149,7 @@
                 return;
             }
 
-            this.api.updateNodeLabels(data);
+            this.executeIfExists('updateNodeLabels', data);
         }
     });
 
