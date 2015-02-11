@@ -3978,7 +3978,7 @@ modules.Zoomable = app.createClass({
 });
 
 }(this, jQuery, d3, _));
-(function (context, $, undefined) {
+(function (context, _, undefined) {
 
 'use strict';
 
@@ -3992,7 +3992,7 @@ transformer.AbstractDataTransformer = app.createClass({
 
 	construct: function (options) {
 
-		this.options = $.extend({}, _defaults, options);
+		this.options = _.extend({}, _defaults, options);
 	},
 
 	from: function () {
@@ -4034,10 +4034,38 @@ transformer.AbstractDataTransformer = app.createClass({
         }
 
         return mapped;
+    },
+
+    /**
+     * Splits the data object into two objects
+     *   properties: an object with the direct key/value pairs from data
+     *   mapped: an object with the keys as values from the map
+     *
+     * @param {Object} data The data object to be split
+     * @param {Object} map The mapping object
+     *                 mapping to false means excluding a key
+     */
+    splitProperties: function (data, map) {
+
+        var properties = {},
+            mapped = {};
+
+        _.forOwn(data, function (value, key) {
+            if (map.hasOwnProperty(key) && map[key]) {
+                mapped[map[key]] = value;
+            } else {
+                properties[key] = value;
+            }
+        });
+
+        return {
+            properties: properties,
+            mapped: mapped
+        };
     }
 });
 
-}(this, jQuery));
+}(this, _));
 (function (context, undefined) {
 
 'use strict';
