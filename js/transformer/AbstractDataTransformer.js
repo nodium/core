@@ -25,25 +25,26 @@ transformer.AbstractDataTransformer = app.createClass({
 
 	getMappedProperties: function (data) {
 		return this.filterAndChangePropertyKeys(data, this.options.map);
+        // return this.mapProperties(data, this.options.map);
 	},
 
 	/**
      * Returns an object with the database field linked to the data value
      */
-    filterAndChangePropertyKeys: function (data, obj) {
+    filterAndChangePropertyKeys: function (data, map) {
 
         var mapped = {},
             dataField,
             mappedField,
             value;
 
-        for (mappedField in obj) {
+        for (mappedField in map) {
 
-        	if (!obj.hasOwnProperty(mappedField)) {
+        	if (!map.hasOwnProperty(mappedField)) {
         		continue;
         	}
 
-            dataField = obj[mappedField];
+            dataField = map[mappedField];
             value = data[dataField];
 
             if (!value) {
@@ -52,6 +53,19 @@ transformer.AbstractDataTransformer = app.createClass({
 
             mapped[mappedField] = value;
         }
+
+        return mapped;
+    },
+
+    mapProperties: function (data, map) {
+
+        var mapped = {};
+
+        _.forOwn(data, function (value, key) {
+            if (map.hasOwnProperty(key) && map[key]) {
+                mapped[map[key]] = value;
+            }
+        });
 
         return mapped;
     },
@@ -70,6 +84,7 @@ transformer.AbstractDataTransformer = app.createClass({
         var properties = {},
             mapped = {};
 
+        // divide and map (if needed and possible)
         _.forOwn(data, function (value, key) {
             if (map.hasOwnProperty(key) && map[key]) {
                 mapped[map[key]] = value;

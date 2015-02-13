@@ -1068,6 +1068,132 @@ event.Kernel = app.createClass(EventAware, {
 
 }(this, _));
 (function (context, _, undefined) {
+	
+	'use strict';
+
+	var model  = context.setNamespace('app.model'),
+		app    = context.use('app');
+		
+	/** fixed node properties
+     *   id path          = '_id'
+     *   labels path      = '_labels'
+     *   properties path  = '_properties'
+     *   mapped path      = '_mapped'
+     */
+
+	model.Node2 = app.createClass({
+
+		construct: function (id, properties, mapped, labels, other) {
+
+			// initialize the mandatory properties for Nodium
+			this._id         = !id && id !== 0 ? _.uniqueId() : id;
+			this._properties = properties || {};
+			this._mapped     = mapped || {};
+			this._labels     = labels || [];
+
+			// add any other fields
+			_.forOwn(other, function (value, key) {
+				if (!this.hasOwnProperty(key)) {
+					this[key] = value;
+				} else {
+					throw "node attribute conflict";
+				}
+			}, this);
+		},
+
+		addLabel: function (label) {
+
+			if (!this.hasLabel(label)) {
+				this._labels.push(label);
+			}
+
+			return this;
+		},
+
+		filterEdges: function (edges) {
+
+            return edges.filter(function (edge) {
+                var sourceId = edge.source.getId();
+                var targetId = edge.target.getId();
+                return sourceId === id || targetId === id;
+            }, this);
+        },
+
+		getId: function () {
+			return this._id;
+		},
+
+		getLabels: function () {
+			return this._labels;
+		},
+
+		getProperties: function () {
+			return this._properties;
+		},
+
+		getProperty: function (property) {
+			return this._properties[property];
+		},
+
+		getMapped: function () {
+			return this._mapped;
+		},
+
+		hasLabel: function (label) {
+            return _.includes(this.getLabels(), label);
+        },
+
+		hasProperty: function (property) {
+            return _.has(this.getProperties(), property);
+        },
+
+        hasPropertyWithValue: function (property, value) {
+            return this.getProperty(property) === value;
+        },
+
+        removeLabel: function (label) {
+
+        	return _.remove(this._labels, label);
+        },
+
+        /**
+         * If value is set, only remove when it has the value
+         * @param {String} property
+         * @param {Any} value
+         * @returns {Boolean}
+         */
+        removeProperty: function (property, value) {
+
+        	if (value !== undefined && !this.hasPropertyWithValue(property, value)) {
+        		return;
+        	}
+
+        	var propertyObject = _.pick(this._properties, property);
+
+        	if (delete this._properties[property]) {
+				return propertyObject;
+			} else {
+				return null;
+			}
+        },
+
+        setLabels: function (labels) {
+
+        	this._labels = labels;
+
+        	return this;
+        },
+
+        setProperty: function (property, value) {
+
+        	this._properties[property] = value;
+
+        	return this;
+        }
+	});
+
+})(this, _);
+(function (context, _, undefined) {
 
 'use strict';
 
@@ -1287,6 +1413,7 @@ model.Update = app.createClass({
 
         initialize: function () {
 
+            // This should be done dynamically depending on which functionality the given api exposes
             $(this.kernel).on(NodeEvent.CREATED, this.handleNodeCreated.bind(this));
             $(this.kernel).on(NodeEvent.DESTROYED, this.handleNodeDeleted.bind(this));
             $(this.kernel).on(EdgeEvent.CREATED, this.handleEdgeCreated.bind(this));
@@ -1295,13 +1422,29 @@ model.Update = app.createClass({
             $(this.kernel).on(NodeEvent.UPDATED, this.handleNodeLabelUpdated.bind(this));
         },
 
+        executeIfExists: function (functionName) {
+
+            var args,
+                fn;
+
+            fn = this.api[functionName];
+
+            if ('function' !== typeof fn) {
+                return;
+            }
+
+            args = arguments.slice(1);
+
+            return fn.apply(this.api, args);
+        },
+
         /**
          * Gets the normalized api content
          * @param {Function} callback
          */
         get: function (callback) {
 
-            this.api.getGraph().then(callback);
+            this.executeIfExists('getGraph').then(callback);
         },
 
         /**
@@ -1312,7 +1455,7 @@ model.Update = app.createClass({
          */
         handleNodeCreated: function (event, node, data) {
 
-            this.api.createNode(data);
+            this.executeIfExists('createNode', data);
         },
 
         /**
@@ -1322,7 +1465,7 @@ model.Update = app.createClass({
          */
         handleNodeDeleted: function (event, data) {
 
-            this.api.deleteNode(data);
+            this.executeIfExists('deleteNode', data);
         },
 
         /**
@@ -1334,7 +1477,7 @@ model.Update = app.createClass({
          */
         handleEdgeCreated: function (event, data, source, target) {
 
-            this.api.createEdge({
+            this.executeIfExists('createEdge', {
                 from: source,
                 to:   target
             }).then(function (id) {
@@ -1349,7 +1492,7 @@ model.Update = app.createClass({
          */
         handleEdgeDeleted: function (event, data) {
 
-            this.api.deleteEdge({ id: data.id });
+            this.executeIfExists('deleteEdge', { id: data.id });
         },
 
         /**
@@ -1368,7 +1511,7 @@ model.Update = app.createClass({
                 return;
             }
 
-            this.api.updateNode(data);
+            this.executeIfExists('updateNode', data);
         },
 
         /**
@@ -1385,7 +1528,7 @@ model.Update = app.createClass({
                 return;
             }
 
-            this.api.updateNodeLabels(data);
+            this.executeIfExists('updateNodeLabels', data);
         }
     });
 

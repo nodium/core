@@ -57,7 +57,7 @@
             args = arguments.slice(1);
 
             return fn.apply(this.api, args);
-        }
+        },
 
         /**
          * Gets the normalized api content
