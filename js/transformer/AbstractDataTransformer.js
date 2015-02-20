@@ -86,8 +86,10 @@ transformer.AbstractDataTransformer = app.createClass({
 
         // divide and map (if needed and possible)
         _.forOwn(data, function (value, key) {
-            if (map.hasOwnProperty(key) && map[key]) {
-                mapped[map[key]] = value;
+            if (map.hasOwnProperty(key)) {
+                if (map[key]) {
+                    mapped[map[key]] = value;
+                }
             } else {
                 properties[key] = value;
             }

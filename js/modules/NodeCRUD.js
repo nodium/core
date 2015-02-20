@@ -6,6 +6,7 @@ var modules     = context.setNamespace('app.modules'),
     transformer = context.setNamespace('app.transformer'),
     app         = context.use('app'),
     model       = context.use('app.model'),
+    Node        = context.use('app.model.Node2'),
     NodeEvent   = context.use('app.event.NodeEvent'),
     EdgeEvent   = context.use('app.event.EdgeEvent'),
 
@@ -52,18 +53,20 @@ modules.NodeCRUD = app.createClass({
             data,
             i;
 
-        // we should be careful not to overwrite property values
+        // add the default properties passed in the options
         for (property in defaultProperties) {
 
             if (!defaultProperties.hasOwnProperty(property)) {
                 continue;
             }
 
+            // we should be careful not to overwrite property values
             if (!properties.hasOwnProperty(property)) {
                 properties[property] = defaultProperties[property];
             }
         }
 
+        // add the default labels from the options
         for (i = 0; i < defaultLabels.length; i++) {
             label = defaultLabels[i];
 
@@ -72,7 +75,17 @@ modules.NodeCRUD = app.createClass({
             }   
         }
 
-        data = model.Node.create(properties, labels);
+        // data = model.Node.create(properties, labels);
+        // data.x = x || 0;
+        // data.y = y || 0;
+
+        data = new Node(
+            null, // don't determine id here
+            properties,
+            null, // no mapped properties (add here?)
+            labels
+        );
+
         data.x = x || 0;
         data.y = y || 0;
 

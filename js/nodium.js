@@ -3371,6 +3371,7 @@ var modules     = context.setNamespace('app.modules'),
     transformer = context.setNamespace('app.transformer'),
     app         = context.use('app'),
     model       = context.use('app.model'),
+    Node        = context.use('app.model.Node2'),
     NodeEvent   = context.use('app.event.NodeEvent'),
     EdgeEvent   = context.use('app.event.EdgeEvent'),
 
@@ -3417,18 +3418,20 @@ modules.NodeCRUD = app.createClass({
             data,
             i;
 
-        // we should be careful not to overwrite property values
+        // add the default properties passed in the options
         for (property in defaultProperties) {
 
             if (!defaultProperties.hasOwnProperty(property)) {
                 continue;
             }
 
+            // we should be careful not to overwrite property values
             if (!properties.hasOwnProperty(property)) {
                 properties[property] = defaultProperties[property];
             }
         }
 
+        // add the default labels from the options
         for (i = 0; i < defaultLabels.length; i++) {
             label = defaultLabels[i];
 
@@ -3437,7 +3440,17 @@ modules.NodeCRUD = app.createClass({
             }   
         }
 
-        data = model.Node.create(properties, labels);
+        // data = model.Node.create(properties, labels);
+        // data.x = x || 0;
+        // data.y = y || 0;
+
+        data = new Node(
+            null, // don't determine id here
+            properties,
+            null, // no mapped properties (add here?)
+            labels
+        );
+
         data.x = x || 0;
         data.y = y || 0;
 
@@ -4148,25 +4161,26 @@ transformer.AbstractDataTransformer = app.createClass({
 
 	getMappedProperties: function (data) {
 		return this.filterAndChangePropertyKeys(data, this.options.map);
+        // return this.mapProperties(data, this.options.map);
 	},
 
 	/**
      * Returns an object with the database field linked to the data value
      */
-    filterAndChangePropertyKeys: function (data, obj) {
+    filterAndChangePropertyKeys: function (data, map) {
 
         var mapped = {},
             dataField,
             mappedField,
             value;
 
-        for (mappedField in obj) {
+        for (mappedField in map) {
 
-        	if (!obj.hasOwnProperty(mappedField)) {
+        	if (!map.hasOwnProperty(mappedField)) {
         		continue;
         	}
 
-            dataField = obj[mappedField];
+            dataField = map[mappedField];
             value = data[dataField];
 
             if (!value) {
@@ -4175,6 +4189,19 @@ transformer.AbstractDataTransformer = app.createClass({
 
             mapped[mappedField] = value;
         }
+
+        return mapped;
+    },
+
+    mapProperties: function (data, map) {
+
+        var mapped = {};
+
+        _.forOwn(data, function (value, key) {
+            if (map.hasOwnProperty(key) && map[key]) {
+                mapped[map[key]] = value;
+            }
+        });
 
         return mapped;
     },
@@ -4193,9 +4220,12 @@ transformer.AbstractDataTransformer = app.createClass({
         var properties = {},
             mapped = {};
 
+        // divide and map (if needed and possible)
         _.forOwn(data, function (value, key) {
-            if (map.hasOwnProperty(key) && map[key]) {
-                mapped[map[key]] = value;
+            if (map.hasOwnProperty(key)) {
+                if (map[key]) {
+                    mapped[map[key]] = value;
+                }
             } else {
                 properties[key] = value;
             }
