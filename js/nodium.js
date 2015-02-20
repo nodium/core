@@ -2798,18 +2798,24 @@ modules.EdgeCRUD = app.createClass({
         // }
 
         // determine action
-        console.log('ACTION: ' + action);
         if (!action) {
             action = edgeIndex === -1 ? 2 : 1;
         }
-        console.log('ACTION: ' + action);
 
         // create or destroy edge
         if (edgeIndex === -1 && action === 2) {
 
+            // create
+
+            // edge = {
+            //     source: source.index,
+            //     target: target.index,
+            //     type: type
+            // };
+
             edge = {
-                source: source.index,
-                target: target.index,
+                source: source,
+                target: target,
                 type: type
             };
 
@@ -2818,6 +2824,8 @@ modules.EdgeCRUD = app.createClass({
             $(this.kernel).trigger(EdgeEvent.CREATED, [edge, source, target]);
 
         } else if (edgeIndex >= 0 && action === 1) {
+
+            // destroy
 
             edge = this.graph.edges[edgeIndex];
             this.graph.edges.splice(edgeIndex, 1);
