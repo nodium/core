@@ -2707,7 +2707,11 @@ modules.EdgeCRUD = app.createClass({
     /**
      * returns the type of edge that should be used for this source and target
      */
-    resolveEdgeType: function (source, target) {
+    resolveEdgeType: function (source, target, type) {
+        if (type) {
+            return type;
+        }
+        
         return 'POINTS_TO';
     },
 
@@ -2772,7 +2776,7 @@ modules.EdgeCRUD = app.createClass({
         var edgeIndex = this.indexOfEdge(source, target, type),
             edge;
 
-        type = type === undefined ? this.resolveEdgeType(source, target) : type;
+        type = this.resolveEdgeType(source, target, type);
 
         if (source.index == target.index) {
             return;
