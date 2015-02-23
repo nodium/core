@@ -33,7 +33,7 @@
      * @returns {String}
      */
     function replace (haystack, value, needle) {
-        return haystack.replace(new RegExp('\{' + needle + '\}'), value);
+        return haystack.replace(new RegExp('\{' + needle + '\}', 'g'), value);
     };
 
     util.stringFromTemplate = stringFromTemplate;
