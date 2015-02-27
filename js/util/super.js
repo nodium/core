@@ -20,9 +20,9 @@
      * @param {String} functionName
      * @returns {Function}
      */
-    util.super = function (functionName) {
+    util.super = function (Constructor, functionName) {
 
-        var prototype = Object.getPrototypeOf(Object.getPrototypeOf(this)),
+        var prototype = Object.getPrototypeOf(Object.getPrototypeOf(Constructor)),
             functionName,
             args;
 

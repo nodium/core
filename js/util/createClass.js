@@ -11,7 +11,7 @@
  * @author Niko van Meurs <nikovanmeurs@gmail.com>
  * @author Sid Mijnders
  */
- (function (context, undefined) {
+ (function (context, _, undefined) {
 
     var util    = context.setNamespace('app.util'),
         app     = context.use('app'),
@@ -71,6 +71,9 @@
             _shouldConstructSuper = false;
         };
 
+        // Add partial super to prototype
+        props.super = _.partial(superFn, Constructor);
+
         // Construct the prototype
         if (null != SuperClass) {
             _shouldConstructSuper = true;
@@ -84,12 +87,12 @@
             }
         } else {
             // Add super to the prototype chain if SuperClass is undefined
-            props.super = superFn;
+            // props.super = superFn;
         }
 
         Constructor.prototype = prototype || props;
 
         return Constructor;
     };
-}(this));
+}(this, _));
 
