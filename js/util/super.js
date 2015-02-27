@@ -20,16 +20,21 @@
      * @param {String} functionName
      * @returns {Function}
      */
-    util.super = function (Constructor, functionName) {
+    util.super = function (functionName) {
 
-        var prototype = Object.getPrototypeOf(Object.getPrototypeOf(Constructor)),
-            functionName,
+        var superContext = this._superContext,
+            prototype = Object.getPrototypeOf(this._superContext),
             args;
 
-        args = [].slice.call(arguments, 1);
+        args = [].slice.call(arguments, 0);
+
+        this._superContext = prototype;
 
         if (prototype.hasOwnProperty(functionName)) {
+
             return prototype[functionName].apply(this, args);
         }
+
+        this._superContext = superContext;
     };
 }(this));

@@ -51,6 +51,8 @@
                 return new Constructor(arguments);
             }
 
+            this._superContext = Object.getPrototypeOf(this);
+
             // Super constructor should be called if this class doesn't have its own construct function
             if (!Object.getPrototypeOf(this).hasOwnProperty('construct')) {
                 _shouldConstructSuper = true;
@@ -71,9 +73,6 @@
             _shouldConstructSuper = false;
         };
 
-        // Add partial super to prototype
-        props.super = _.partial(superFn, Constructor);
-
         // Construct the prototype
         if (null != SuperClass) {
             _shouldConstructSuper = true;
@@ -87,7 +86,7 @@
             }
         } else {
             // Add super to the prototype chain if SuperClass is undefined
-            // props.super = superFn;
+            props.super = superFn;
         }
 
         Constructor.prototype = prototype || props;

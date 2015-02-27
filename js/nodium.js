@@ -137,15 +137,20 @@ var app                 = context.setNamespace('app');
      */
     util.super = function (functionName) {
 
-        var prototype = Object.getPrototypeOf(Object.getPrototypeOf(this)),
-            functionName,
+        var superContext = this._superContext,
+            prototype = Object.getPrototypeOf(this._superContext),
             args;
 
-        args = [].slice.call(arguments, 1);
+        args = [].slice.call(arguments, 0);
+
+        this._superContext = prototype;
 
         if (prototype.hasOwnProperty(functionName)) {
+
             return prototype[functionName].apply(this, args);
         }
+
+        this._superContext = superContext;
     };
 }(this));
 
@@ -162,7 +167,7 @@ var app                 = context.setNamespace('app');
  * @author Niko van Meurs <nikovanmeurs@gmail.com>
  * @author Sid Mijnders
  */
- (function (context, undefined) {
+ (function (context, _, undefined) {
 
     var util    = context.setNamespace('app.util'),
         app     = context.use('app'),
@@ -201,6 +206,8 @@ var app                 = context.setNamespace('app');
             if (false === (this instanceof Constructor)) {
                 return new Constructor(arguments);
             }
+
+            this._superContext = Object.getPrototypeOf(this);
 
             // Super constructor should be called if this class doesn't have its own construct function
             if (!Object.getPrototypeOf(this).hasOwnProperty('construct')) {
@@ -242,7 +249,7 @@ var app                 = context.setNamespace('app');
 
         return Constructor;
     };
-}(this));
+}(this, _));
 
 
 /**
