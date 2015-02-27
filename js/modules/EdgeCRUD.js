@@ -48,18 +48,18 @@ modules.EdgeCRUD = app.createClass({
         }
     },
 
-    handleCreateEdge: function (event, source, target) {
+    handleCreateEdge: function (event, source, target, type) {
 
         console.log('handling edge creation');
 
-        this.updateLink(source, target, undefined, 2);
+        this.updateLink(source, target, type, 2);
     },
 
-    handleDestroyEdge: function (event, source, target) {
+    handleDestroyEdge: function (event, source, target, type) {
 
         console.log('handling edge deletion');
 
-        this.updateLink(source, target, undefined, 1);
+        this.updateLink(source, target, type, 1);
     },
 
     handleUpdateEdge: function (event, edge, update) {
@@ -95,7 +95,11 @@ modules.EdgeCRUD = app.createClass({
     /**
      * returns the type of edge that should be used for this source and target
      */
-    resolveEdgeType: function (source, target) {
+    resolveEdgeType: function (source, target, type) {
+        if (type) {
+            return type;
+        }
+        
         return 'POINTS_TO';
     },
 
@@ -111,7 +115,7 @@ modules.EdgeCRUD = app.createClass({
         this.graph.edges.forEach(function (edge, i) {
 
             if (type && edge.type !== type) {
-                return;
+                return index;
             }
 
             if ((edge.source.index == source.index && edge.target.index == target.index) ||
@@ -160,7 +164,7 @@ modules.EdgeCRUD = app.createClass({
         var edgeIndex = this.indexOfEdge(source, target, type),
             edge;
 
-        type = type === undefined ? this.resolveEdgeType(source, target) : type;
+        type = this.resolveEdgeType(source, target, type);
 
         if (source.index == target.index) {
             return;
